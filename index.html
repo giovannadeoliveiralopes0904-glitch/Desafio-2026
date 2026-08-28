@@ -1297,61 +1297,211 @@ function calculateStreak(data){
 async function saveWorkout(){
 
   const pushups =
-    Number(
-      document.getElementById("pushups").value
-    );
+    Number(document.getElementById("pushups").value);
 
   const situps =
-    Number(
-      document.getElementById("situps").value
-    );
+    Number(document.getElementById("situps").value);
 
   const plank =
-    Number(
-      document.getElementById("plank").value
-    );
+    Number(document.getElementById("plank").value);
 
-  const today =
-    new Date()
-      .toISOString()
-      .slice(0,10);
+  const message =
+    document.getElementById("saveMessage");
 
+  message.textContent = "Salvando...";
+
+  // A meta diária precisa estar completa
   const completed =
     pushups >= 10 &&
     situps >= 10 &&
     plank >= 60;
 
+  if(!completed){
+
+    message.textContent =
+      "⚠️ Complete 10 flexões, 10 abdominais e 60 segundos de prancha.";
+
+    return;
+  }
+
+  // Data de hoje
+  const todayDate = new Date();
+  const today =
+    todayDate.toISOString().slice(0,10);
+
+  // Procurar os últimos treinos do participante
+  const {data: workouts, error: historyError} =
+    await supabaseClient
+      .from("daily_workouts")
+      .select("*")
+      .eq("participant_id", currentParticipant.id)
+      .order("workout_date", {ascending:false})
+      .limit(30);
+
+  if(historyError){
+
+    console.error(historyError);
+
+    message.textContent =
+      "Erro ao consultar histórico: " +
+      historyError.message;
+
+    return;
+  }
+
+  // Não permitir duplicação indevida do treino de hoje
+  const todayWorkout =
+    workouts.find(
+      w => w.workout_date === today
+    );
+
+  /*
+    Calcula quantos dias se passaram
+    desde o último treino concluído.
+  */
+
+  let lastCompletedDate = null;
+
+  for(const workout of workouts){
+
+    if(
+      workout.completed === true &&
+      workout.workout_date !== today
+    ){
+
+      lastCompletedDate =
+        workout.workout_date;
+
+      break;
+    }
+  }
+
+  let daysWithoutWorkout = 0;
+
+  if(lastCompletedDate){
+
+    const last =
+      new Date(
+        lastCompletedDate + "T00:00:00"
+      );
+
+    const current =
+      new Date(
+        today + "T00:00:00"
+      );
+
+    daysWithoutWorkout =
+      Math.floor(
+        (current - last) /
+        (1000 * 60 * 60 * 24)
+      ) - 1;
+
+  }
+
+
+  /*
+    REGRA:
+
+    0 dias de falta:
+    treino normal.
+
+    1 dia de falta:
+    o treino de hoje pode compensar
+    o dia anterior.
+
+    Mais de 1 dia:
+    não é considerado uma compensação
+    simples.
+  */
+
+  let compensated = false;
+  let compensatesDate = null;
+  let workoutUnits = 1;
+  let penaltyDays = 0;
+
+
+  if(daysWithoutWorkout === 1){
+
+    compensated = true;
+
+    const yesterday =
+      new Date(today + "T00:00:00");
+
+    yesterday.setDate(
+      yesterday.getDate() - 1
+    );
+
+    compensatesDate =
+      yesterday
+        .toISOString()
+        .slice(0,10);
+
+    workoutUnits = 2;
+
+  }
+  else if(daysWithoutWorkout > 1){
+
+    /*
+      A partir do segundo dia de atraso,
+      cada dia adicional gera 1 penalização.
+    */
+
+    penaltyDays =
+      daysWithoutWorkout - 1;
+
+    workoutUnits = 1;
+
+  }
+
+
+  const workoutData = {
+
+    participant_id:
+      currentParticipant.id,
+
+    workout_date:
+      today,
+
+    pushups:
+      pushups,
+
+    situps:
+      situps,
+
+    plank_seconds:
+      plank,
+
+    completed:
+      true,
+
+    compensated:
+      compensated,
+
+    compensation_for_date:
+      compensatesDate,
+
+    compensates_date:
+      compensatesDate,
+
+    penalty_days:
+      penaltyDays,
+
+    workout_units:
+      workoutUnits
+
+  };
+
+
   const {error} =
     await supabaseClient
       .from("daily_workouts")
-      .upsert({
-
-        participant_id:
-          currentParticipant.id,
-
-        workout_date:
-          today,
-
-        pushups:
-          pushups,
-
-        situps:
-          situps,
-
-        plank_seconds:
-          plank,
-
-        completed:
-          completed
-
-      },{
-        onConflict:
-          "participant_id,workout_date"
-      });
-
-
-  const message =
-    document.getElementById("saveMessage");
+      .upsert(
+        workoutData,
+        {
+          onConflict:
+            "participant_id,workout_date"
+        }
+      );
 
 
   if(error){
@@ -1365,10 +1515,33 @@ async function saveWorkout(){
   }
 
 
-  message.textContent =
-    completed
-      ? "✅ Treino salvo com sucesso!"
-      : "⚠️ Registro salvo, mas a meta não foi completa.";
+  if(compensated){
+
+    message.textContent =
+      "🔄 Treino salvo! Falta de 1 dia compensada.";
+
+  }
+  else if(penaltyDays > 0){
+
+    message.textContent =
+      "⚠️ Treino salvo. Penalização aplicada: " +
+      penaltyDays +
+      " dia(s).";
+
+  }
+  else if(todayWorkout){
+
+    message.textContent =
+      "✅ Treino de hoje atualizado!";
+
+  }
+  else{
+
+    message.textContent =
+      "✅ Treino salvo com sucesso!";
+
+  }
+
 
   await loadData();
 
