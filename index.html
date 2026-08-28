@@ -950,67 +950,13 @@ button{
 
   </div>
 
-  <div class="money">
-
-    <div class="moneyLabel">
-      🥇 Kayky
-    </div>
-
-    <div class="moneyValue">
-      ISENTO
-    </div>
-
-  </div>
-
-  <div class="money">
-
-    <div class="moneyLabel">
-      Breno
-    </div>
-
-    <div class="moneyValue">
-      R$ 50,00
-    </div>
-
-  </div>
-
-  <div class="money">
-
-    <div class="moneyLabel">
-      Giovanna
-    </div>
-
-    <div class="moneyValue">
-      R$ 50,00
-    </div>
-
-  </div>
-
-  <div class="money">
-
-    <div class="moneyLabel">
-      Lucinaldo
-    </div>
-
-    <div class="moneyValue">
-      R$ 50,00
-    </div>
-
-  </div>
-
-  <div class="money">
-
-    <div class="moneyLabel">
-      💵 Prêmio acumulado
-    </div>
-
-    <div class="moneyValue">
-      R$ 150,00
-    </div>
-
+  <div id="paymentsList">
+    Carregando...
   </div>
 
 </div>
+
+
     </section>
     </section>
 
@@ -1970,6 +1916,109 @@ await loadMonthlyRanking();
 
     }
   );
+
+  }
+  async function loadPayments(){
+
+  const monthStart =
+    new Date(
+      new Date().getFullYear(),
+      new Date().getMonth(),
+      1
+    )
+    .toISOString()
+    .slice(0,10);
+
+  const {data,error} =
+    await supabaseClient
+      .from("monthly_payments")
+      .select(`
+        participant_id,
+        amount,
+        exempt,
+        paid,
+        participants (
+          name
+        )
+      `)
+      .eq(
+        "payment_month",
+        monthStart
+      );
+
+  if(error){
+
+    console.error(error);
+
+    return;
+  }
+
+  const container =
+    document.getElementById(
+      "paymentsList"
+    );
+
+  if(!container) return;
+
+  container.innerHTML = "";
+
+  let total = 0;
+
+  data.forEach(payment => {
+
+    const name =
+      payment.participants?.name ||
+      "Participante";
+
+    const value =
+      payment.exempt
+        ? "ISENTO"
+        : "R$ 50,00";
+
+    if(!payment.exempt){
+      total += 50;
+    }
+
+    const div =
+      document.createElement("div");
+
+    div.className = "money";
+
+    div.innerHTML = `
+
+      <div class="moneyLabel">
+        ${name}
+      </div>
+
+      <div class="moneyValue">
+        ${value}
+      </div>
+
+    `;
+
+    container.appendChild(div);
+
+  });
+
+
+  const prize =
+    document.createElement("div");
+
+  prize.className = "money";
+
+  prize.innerHTML = `
+
+    <div class="moneyLabel">
+      💵 Prêmio acumulado
+    </div>
+
+    <div class="moneyValue">
+      R$ ${total.toFixed(2).replace(".", ",")}
+    </div>
+
+  `;
+
+  container.appendChild(prize);
 
   }
 
