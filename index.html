@@ -1,394 +1,1074 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 
-  <title>Desafio 2026</title>
+<title>Desafio 2026</title>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: Arial, sans-serif;
-    }
+<style>
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+  font-family:Arial,sans-serif;
+}
 
-    body {
-      min-height: 100vh;
-      background: #f4f6f8;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 20px;
-    }
+body{
+  background:#f4f6f8;
+  color:#111827;
+  min-height:100vh;
+}
 
-    .container {
-      width: 100%;
-      max-width: 420px;
-    }
+button{
+  border:0;
+  cursor:pointer;
+}
 
-    .card {
-      background: white;
-      border-radius: 22px;
-      padding: 30px;
-      box-shadow: 0 10px 35px rgba(0,0,0,0.08);
-    }
+.hidden{
+  display:none!important;
+}
 
-    .logo {
-      width: 70px;
-      height: 70px;
-      border-radius: 20px;
-      background: #111827;
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 28px;
-      font-weight: bold;
-      margin: 0 auto 20px;
-    }
+/* LOGIN */
 
-    h1 {
-      text-align: center;
-      color: #111827;
-      margin-bottom: 8px;
-    }
+#loginScreen{
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+}
 
-    .subtitle {
-      text-align: center;
-      color: #6b7280;
-      margin-bottom: 28px;
-    }
+.loginCard{
+  background:white;
+  width:100%;
+  max-width:400px;
+  padding:30px;
+  border-radius:24px;
+  box-shadow:0 10px 35px rgba(0,0,0,.08);
+}
 
-    label {
-      display: block;
-      margin-bottom: 7px;
-      color: #374151;
-      font-weight: bold;
-      font-size: 14px;
-    }
+.logo{
+  width:70px;
+  height:70px;
+  border-radius:20px;
+  background:#111827;
+  color:white;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:30px;
+  font-weight:bold;
+  margin:0 auto 20px;
+}
 
-    input {
-      width: 100%;
-      padding: 14px;
-      border: 1px solid #d1d5db;
-      border-radius: 12px;
-      margin-bottom: 16px;
-      font-size: 16px;
-      outline: none;
-    }
+.loginCard h1{
+  text-align:center;
+  margin-bottom:8px;
+}
 
-    input:focus {
-      border-color: #111827;
-    }
+.subtitle{
+  text-align:center;
+  color:#6b7280;
+  margin-bottom:28px;
+}
 
-    button {
-      width: 100%;
-      padding: 15px;
-      border: none;
-      border-radius: 12px;
-      background: #111827;
-      color: white;
-      font-size: 16px;
-      font-weight: bold;
-      cursor: pointer;
-    }
+label{
+  display:block;
+  font-size:14px;
+  font-weight:bold;
+  margin-bottom:7px;
+}
 
-    button:active {
-      transform: scale(0.99);
-    }
+input{
+  width:100%;
+  padding:14px;
+  border:1px solid #d1d5db;
+  border-radius:12px;
+  margin-bottom:16px;
+  font-size:16px;
+}
 
-    #message {
-      margin-top: 15px;
-      text-align: center;
-      font-size: 14px;
-      color: #dc2626;
-    }
+.primary{
+  width:100%;
+  padding:15px;
+  border-radius:12px;
+  background:#111827;
+  color:white;
+  font-weight:bold;
+  font-size:16px;
+}
 
-    #app {
-      display: none;
-    }
+#error{
+  text-align:center;
+  color:#dc2626;
+  margin-top:15px;
+}
 
-    .welcome {
-      text-align: center;
-      margin-bottom: 25px;
-    }
+/* APP */
 
-    .welcome h2 {
-      color: #111827;
-      margin-bottom: 8px;
-    }
+#app{
+  min-height:100vh;
+  padding-bottom:90px;
+}
 
-    .welcome p {
-      color: #6b7280;
-    }
+.header{
+  background:#111827;
+  color:white;
+  padding:25px 20px 30px;
+  border-radius:0 0 28px 28px;
+}
 
-    .menu {
-      display: grid;
-      gap: 12px;
-    }
+.headerTop{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:25px;
+}
 
-    .menu button {
-      background: #f3f4f6;
-      color: #111827;
-      text-align: left;
-    }
+.header small{
+  opacity:.7;
+}
 
-    .logout {
-      margin-top: 20px;
-      background: #dc2626 !important;
-      color: white !important;
-      text-align: center !important;
-    }
-  </style>
+.logout{
+  background:rgba(255,255,255,.12);
+  color:white;
+  padding:9px 12px;
+  border-radius:10px;
+}
+
+.content{
+  max-width:700px;
+  margin:auto;
+  padding:20px;
+}
+
+.card{
+  background:white;
+  border-radius:20px;
+  padding:20px;
+  margin-bottom:16px;
+  box-shadow:0 5px 20px rgba(0,0,0,.05);
+}
+
+.cardTitle{
+  font-weight:bold;
+  margin-bottom:15px;
+}
+
+.stats{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+}
+
+.stat{
+  background:#f3f4f6;
+  border-radius:15px;
+  padding:15px 8px;
+  text-align:center;
+}
+
+.stat strong{
+  display:block;
+  font-size:23px;
+  margin-bottom:5px;
+}
+
+.stat span{
+  color:#6b7280;
+  font-size:12px;
+}
+
+.exercise{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:14px 0;
+  border-bottom:1px solid #eee;
+}
+
+.exercise:last-child{
+  border-bottom:0;
+}
+
+.exerciseInfo strong{
+  display:block;
+  margin-bottom:4px;
+}
+
+.exerciseInfo span{
+  font-size:13px;
+  color:#6b7280;
+}
+
+.exercise input{
+  width:90px;
+  margin:0;
+  text-align:center;
+}
+
+.saveButton{
+  margin-top:18px;
+}
+
+.message{
+  text-align:center;
+  margin-top:12px;
+  font-size:14px;
+}
+
+/* CALENDÁRIO */
+
+.calendar{
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  gap:5px;
+}
+
+.day{
+  aspect-ratio:1;
+  border-radius:9px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:12px;
+  background:#f3f4f6;
+}
+
+.day.done{
+  background:#111827;
+  color:white;
+}
+
+.day.today{
+  outline:2px solid #111827;
+}
+
+/* NAVEGAÇÃO */
+
+.bottomNav{
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  background:white;
+  border-top:1px solid #e5e7eb;
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  padding:10px 5px calc(10px + env(safe-area-inset-bottom));
+  z-index:10;
+}
+
+.navButton{
+  background:none;
+  color:#6b7280;
+  padding:8px 2px;
+  font-size:12px;
+}
+
+.navButton.active{
+  color:#111827;
+  font-weight:bold;
+}
+
+.section{
+  display:none;
+}
+
+.section.active{
+  display:block;
+}
+
+@media(max-width:380px){
+  .stats{
+    grid-template-columns:1fr;
+  }
+}
+</style>
 </head>
 
 <body>
 
-  <div class="container">
+<!-- LOGIN -->
 
-    <!-- LOGIN -->
-    <div class="card" id="login">
+<div id="loginScreen">
 
-      <div class="logo">D</div>
+<div class="loginCard">
 
-      <h1>Desafio 2026</h1>
+<div class="logo">D</div>
 
-      <p class="subtitle">
-        Entre para acessar seu desafio
-      </p>
+<h1>Desafio 2026</h1>
 
-      <label for="email">E-mail</label>
-      <input
-        id="email"
-        type="email"
-        placeholder="Digite seu e-mail"
-      >
+<p class="subtitle">
+Seu desafio. Seu progresso.
+</p>
 
-      <label for="password">Senha</label>
-      <input
-        id="password"
-        type="password"
-        placeholder="Digite sua senha"
-      >
+<label>E-mail</label>
 
-      <button onclick="login()">
-        Entrar
-      </button>
+<input
+id="email"
+type="email"
+placeholder="Digite seu e-mail">
 
-      <div id="message"></div>
+<label>Senha</label>
 
-    </div>
+<input
+id="password"
+type="password"
+placeholder="Digite sua senha">
+
+<button class="primary" onclick="login()">
+Entrar
+</button>
+
+<div id="error"></div>
+
+</div>
+
+</div>
 
 
-    <!-- APLICATIVO -->
-    <div class="card" id="app">
+<!-- APLICATIVO -->
 
-      <div class="welcome">
+<div id="app" class="hidden">
 
-        <div class="logo">D</div>
+<header class="header">
 
-        <h2 id="welcomeName">
-          Olá!
-        </h2>
+<div class="headerTop">
 
-        <p>
-          Bem-vindo ao Desafio 2026
-        </p>
+<div>
+<small>DESAFIO 2026</small>
+<h2 id="userName">Olá!</h2>
+</div>
 
-      </div>
+<button class="logout" onclick="logout()">
+Sair
+</button>
 
-      <div class="menu">
+</div>
 
-        <button onclick="alert('Calendário em construção')">
-          📅 Meu calendário
-        </button>
+<div>
+<small>🔥 Sua sequência atual</small>
+<h2 id="streak">0 dias</h2>
+</div>
 
-        <button onclick="alert('Exercícios em construção')">
-          🏋️ Meus exercícios
-        </button>
+</header>
 
-        <button onclick="alert('Faltas e compensações em construção')">
-          📋 Faltas e compensações
-        </button>
 
-        <button onclick="alert('Ranking em construção')">
-          🏆 Ranking
-        </button>
+<main class="content">
 
-        <button onclick="alert('Fechamento mensal em construção')">
-          📊 Fechamento mensal
-        </button>
 
-        <button class="logout" onclick="logout()">
-          Sair
-        </button>
+<!-- INÍCIO -->
 
-      </div>
+<section id="home" class="section active">
 
-    </div>
+<div class="card">
 
-  </div>
+<div class="cardTitle">
+📊 Meu progresso
+</div>
+
+<div class="stats">
+
+<div class="stat">
+<strong id="completedCount">0</strong>
+<span>Dias feitos</span>
+</div>
+
+<div class="stat">
+<strong id="points">0</strong>
+<span>Pontos</span>
+</div>
+
+<div class="stat">
+<strong id="penalties">0</strong>
+<span>Penalizações</span>
+</div>
+
+</div>
+
+</div>
+
+
+<div class="card">
+
+<div class="cardTitle">
+💪 Treino de hoje
+</div>
+
+<div class="exercise">
+
+<div class="exerciseInfo">
+<strong>Flexões</strong>
+<span>Meta: 10</span>
+</div>
+
+<input id="pushups" type="number" min="0" value="0">
+
+</div>
+
+
+<div class="exercise">
+
+<div class="exerciseInfo">
+<strong>Abdominais</strong>
+<span>Meta: 10</span>
+</div>
+
+<input id="situps" type="number" min="0" value="0">
+
+</div>
+
+
+<div class="exercise">
+
+<div class="exerciseInfo">
+<strong>Prancha</strong>
+<span>Meta: 1 minuto</span>
+</div>
+
+<input id="plank" type="number" min="0" value="0">
+
+</div>
+
+
+<button
+class="primary saveButton"
+onclick="saveWorkout()">
+
+Salvar treino
+
+</button>
+
+<div id="saveMessage" class="message"></div>
+
+</div>
+
+</section>
+
+
+<!-- CALENDÁRIO -->
+
+<section id="calendarSection" class="section">
+
+<div class="card">
+
+<div class="cardTitle">
+📅 Meu calendário
+</div>
+
+<p id="monthTitle"></p>
+
+<br>
+
+<div class="calendar" id="calendar"></div>
+
+</div>
+
+</section>
+
+
+<!-- RANKING -->
+
+<section id="ranking" class="section">
+
+<div class="card">
+
+<div class="cardTitle">
+🏆 Ranking geral
+</div>
+
+<div id="rankingList">
+Carregando...
+</div>
+
+</div>
+
+</section>
+
+
+<!-- PERFIL -->
+
+<section id="profile" class="section">
+
+<div class="card">
+
+<div class="cardTitle">
+👤 Meu perfil
+</div>
+
+<p id="profileName"></p>
+
+<br>
+
+<p>
+🔥 Sequência:
+<strong id="profileStreak">0</strong>
+dias
+</p>
+
+<br>
+
+<p>
+💰 Contribuição mensal:
+<strong>R$ 50,00</strong>
+</p>
+
+</div>
+
+</section>
+
+</main>
+
+
+<!-- MENU -->
+
+<nav class="bottomNav">
+
+<button
+class="navButton active"
+onclick="showSection('home',this)">
+🏠<br>Início
+</button>
+
+<button
+class="navButton"
+onclick="showSection('calendarSection',this)">
+📅<br>Calendário
+</button>
+
+<button
+class="navButton"
+onclick="showSection('ranking',this)">
+🏆<br>Ranking
+</button>
+
+<button
+class="navButton"
+onclick="showSection('profile',this)">
+👤<br>Perfil
+</button>
+
+</nav>
+
+</div>
 
 
 <script>
 
-  // =====================================================
-  // CONFIGURAÇÃO DO SUPABASE
-  // =====================================================
+/* =====================================================
+SUPABASE
+===================================================== */
 
-  const SUPABASE_URL =
-    "https://hrqsittjwiikzzwgzkud.supabase.co";
+const SUPABASE_URL =
+"https://hrqsittjwiikzzwgzkud.supabase.co";
 
-  const SUPABASE_PUBLISHABLE_KEY =
-    "sb_publishable_pimByx9OjHFT_DbRF-CrtA_0fDjjzCB";
+const SUPABASE_PUBLISHABLE_KEY =
+"sb_publishable_pimByx9OjHFT_DbRF-CrtA_0fDjjzCB";
 
-
-  const supabaseClient =
-    supabase.createClient(
-      SUPABASE_URL,
-      SUPABASE_PUBLISHABLE_KEY
-    );
-
-
-  // =====================================================
-  // LOGIN
-  // =====================================================
-
-  async function login() {
-
-    const email =
-      document.getElementById("email").value.trim();
-
-    const password =
-      document.getElementById("password").value;
-
-    const message =
-      document.getElementById("message");
-
-    message.textContent = "";
-
-    if (!email || !password) {
-
-      message.textContent =
-        "Digite o e-mail e a senha.";
-
-      return;
-    }
+const supabaseClient =
+supabase.createClient(
+SUPABASE_URL,
+SUPABASE_PUBLISHABLE_KEY
+);
 
 
-    const { data, error } =
-      await supabaseClient.auth.signInWithPassword({
-
-        email: email,
-
-        password: password
-
-      });
+let currentUser = null;
+let currentParticipant = null;
 
 
-    if (error) {
+/* =====================================================
+LOGIN
+===================================================== */
 
-      message.textContent =
-        "E-mail ou senha incorretos.";
+async function login(){
 
-      console.error(error);
+const email =
+document.getElementById("email").value.trim();
 
-      return;
-    }
+const password =
+document.getElementById("password").value;
 
+const error =
+document.getElementById("error");
 
-    await carregarParticipante(data.user.id);
+error.textContent="";
 
-  }
+const {data,error:loginError} =
+await supabaseClient.auth.signInWithPassword({
+email,
+password
+});
 
+if(loginError){
 
-  // =====================================================
-  // CARREGAR PARTICIPANTE
-  // =====================================================
+error.textContent =
+"E-mail ou senha incorretos.";
 
-  async function carregarParticipante(userId) {
+return;
+}
 
-    const { data, error } =
-      await supabaseClient
-        .from("participants")
-        .select("name")
-        .eq("auth_user_id", userId)
-        .single();
+currentUser = data.user;
 
+await loadParticipant();
 
-    if (error) {
-
-      console.error(error);
-
-      alert(
-        "Login realizado, mas não foi possível encontrar o participante."
-      );
-
-      return;
-    }
+}
 
 
-    document.getElementById("login").style.display =
-      "none";
+/* =====================================================
+PARTICIPANTE
+===================================================== */
 
-    document.getElementById("app").style.display =
-      "block";
+async function loadParticipant(){
 
-    document.getElementById("welcomeName").textContent =
-      "Olá, " + data.name + "!";
+const {data,error} =
+await supabaseClient
+.from("participants")
+.select("*")
+.eq("auth_user_id",currentUser.id)
+.single();
 
-  }
+if(error){
 
+console.error(error);
 
-  // =====================================================
-  // VERIFICAR LOGIN EXISTENTE
-  // =====================================================
+alert(
+"Login feito, mas participante não encontrado."
+);
 
-  async function verificarSessao() {
+return;
+}
 
-    const { data } =
-      await supabaseClient.auth.getSession();
+currentParticipant=data;
 
+document.getElementById("loginScreen")
+.classList.add("hidden");
 
-    if (data.session) {
+document.getElementById("app")
+.classList.remove("hidden");
 
-      await carregarParticipante(
-        data.session.user.id
-      );
+document.getElementById("userName")
+.textContent =
+"Olá, "+data.name+"!";
 
-    }
+document.getElementById("profileName")
+.textContent =
+data.name;
 
-  }
+await loadData();
 
-
-  // =====================================================
-  // SAIR
-  // =====================================================
-
-  async function logout() {
-
-    await supabaseClient.auth.signOut();
-
-    document.getElementById("app").style.display =
-      "none";
-
-    document.getElementById("login").style.display =
-      "block";
-
-    document.getElementById("email").value =
-      "";
-
-    document.getElementById("password").value =
-      "";
-
-  }
+}
 
 
-  verificarSessao();
+/* =====================================================
+DADOS
+===================================================== */
+
+async function loadData(){
+
+await loadStats();
+
+await loadCalendar();
+
+await loadRanking();
+
+}
+
+
+/* =====================================================
+ESTATÍSTICAS
+===================================================== */
+
+async function loadStats(){
+
+const {data,error} =
+await supabaseClient
+.from("daily_workouts")
+.select("*")
+.eq(
+"participant_id",
+currentParticipant.id
+);
+
+if(error){
+
+console.error(error);
+
+return;
+}
+
+const completed =
+data.filter(x=>x.completed);
+
+document.getElementById("completedCount")
+.textContent =
+completed.length;
+
+const penalty =
+data.reduce(
+(total,x)=>total+(x.penalty_days||0),
+0
+);
+
+document.getElementById("penalties")
+.textContent =
+penalty;
+
+document.getElementById("points")
+.textContent =
+Math.max(0,completed.length-penalty);
+
+calculateStreak(data);
+
+}
+
+
+/* =====================================================
+SEQUÊNCIA
+===================================================== */
+
+function calculateStreak(data){
+
+const doneDates =
+new Set(
+data
+.filter(x=>x.completed)
+.map(x=>x.workout_date)
+);
+
+let streak=0;
+
+let date=new Date();
+
+date.setHours(0,0,0,0);
+
+while(true){
+
+const key =
+date.toISOString().slice(0,10);
+
+if(!doneDates.has(key))
+break;
+
+streak++;
+
+date.setDate(
+date.getDate()-1
+);
+
+}
+
+document.getElementById("streak")
+.textContent =
+streak+" dias";
+
+document.getElementById("profileStreak")
+.textContent =
+streak;
+
+}
+
+
+/* =====================================================
+SALVAR TREINO
+===================================================== */
+
+async function saveWorkout(){
+
+const pushups =
+Number(
+document.getElementById("pushups").value
+);
+
+const situps =
+Number(
+document.getElementById("situps").value
+);
+
+const plank =
+Number(
+document.getElementById("plank").value
+);
+
+
+const today =
+new Date()
+.toISOString()
+.slice(0,10);
+
+
+const completed =
+pushups>=10 &&
+situps>=10 &&
+plank>=60;
+
+
+const {error} =
+await supabaseClient
+.from("daily_workouts")
+.upsert({
+
+participant_id:
+currentParticipant.id,
+
+workout_date:
+today,
+
+pushups:
+pushups,
+
+situps:
+situps,
+
+plank_seconds:
+plank,
+
+completed:
+completed
+
+},{
+onConflict:
+"participant_id,workout_date"
+});
+
+
+const message =
+document.getElementById("saveMessage");
+
+
+if(error){
+
+console.error(error);
+
+message.textContent =
+"Não foi possível salvar.";
+
+return;
+}
+
+
+message.textContent =
+completed
+? "✅ Treino salvo!"
+: "⚠️ Registro salvo, mas a meta ainda não foi completa.";
+
+await loadData();
+
+}
+
+
+/* =====================================================
+CALENDÁRIO
+===================================================== */
+
+async function loadCalendar(){
+
+const {data,error} =
+await supabaseClient
+.from("daily_workouts")
+.select("workout_date,completed")
+.eq(
+"participant_id",
+currentParticipant.id
+);
+
+if(error)return;
+
+const done =
+new Set(
+data
+.filter(x=>x.completed)
+.map(x=>x.workout_date)
+);
+
+
+const today =
+new Date();
+
+const year =
+today.getFullYear();
+
+const month =
+today.getMonth();
+
+document.getElementById("monthTitle")
+.textContent =
+today.toLocaleDateString(
+"pt-BR",
+{
+month:"long",
+year:"numeric"
+}
+);
+
+
+const calendar =
+document.getElementById("calendar");
+
+calendar.innerHTML="";
+
+
+const days =
+new Date(
+year,
+month+1,
+0
+).getDate();
+
+
+for(let day=1;day<=days;day++){
+
+const date =
+new Date(
+year,
+month,
+day
+);
+
+const key =
+date.toISOString().slice(0,10);
+
+const div =
+document.createElement("div");
+
+div.className="day";
+
+if(done.has(key))
+div.classList.add("done");
+
+const todayKey =
+new Date()
+.toISOString()
+.slice(0,10);
+
+if(key===todayKey)
+div.classList.add("today");
+
+div.textContent=day;
+
+calendar.appendChild(div);
+
+}
+
+}
+
+
+/* =====================================================
+RANKING
+===================================================== */
+
+async function loadRanking(){
+
+const {data,error} =
+await supabaseClient
+.from("general_ranking")
+.select("*")
+.order("score",{ascending:false});
+
+if(error){
+
+console.error(error);
+
+return;
+}
+
+const list =
+document.getElementById("rankingList");
+
+list.innerHTML="";
+
+
+data.forEach((person,index)=>{
+
+const div =
+document.createElement("div");
+
+div.style.padding="14px 0";
+
+div.style.borderBottom =
+"1px solid #eee";
+
+div.innerHTML =
+`
+<strong>${index+1}º ${person.name}</strong>
+<br>
+<span style="color:#6b7280">
+${person.score} pontos
+</span>
+`;
+
+list.appendChild(div);
+
+});
+
+}
+
+
+/* =====================================================
+NAVEGAÇÃO
+===================================================== */
+
+function showSection(id,button){
+
+document
+.querySelectorAll(".section")
+.forEach(section=>{
+section.classList.remove("active");
+});
+
+document
+.getElementById(id)
+.classList.add("active");
+
+
+document
+.querySelectorAll(".navButton")
+.forEach(btn=>{
+btn.classList.remove("active");
+});
+
+button.classList.add("active");
+
+}
+
+
+/* =====================================================
+LOGOUT
+===================================================== */
+
+async function logout(){
+
+await supabaseClient.auth.signOut();
+
+location.reload();
+
+}
+
+
+/* =====================================================
+SESSÃO
+===================================================== */
+
+async function checkSession(){
+
+const {data} =
+await supabaseClient.auth.getSession();
+
+if(data.session){
+
+currentUser =
+data.session.user;
+
+await loadParticipant();
+
+}
+
+}
+
+checkSession();
 
 </script>
 
