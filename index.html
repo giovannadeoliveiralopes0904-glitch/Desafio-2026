@@ -844,7 +844,12 @@ if(error){
 console.error(error);
 
 message.textContent =
-"Não foi possível salvar.";
+"Erro: " + error.message;
+
+alert(
+"Erro ao salvar:\n\n" +
+error.message
+);
 
 return;
 }
