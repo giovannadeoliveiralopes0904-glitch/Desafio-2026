@@ -914,7 +914,30 @@ button{
         </div>
 
       </div>
+</div>
 
+<div class="card">
+
+  <div class="cardHead">
+
+    <div class="cardTitle">
+      🗓️ Ranking deste mês
+    </div>
+
+    <div
+      id="currentMonth"
+      class="cardSub"
+    ></div>
+
+  </div>
+
+  <div id="monthlyRankingList">
+    Carregando...
+  </div>
+
+</div>
+
+    </section>
     </section>
 
 
@@ -1779,8 +1802,102 @@ async function loadRanking(){
 
     }
   );
-
+await loadMonthlyRanking();
 }
+  async function loadMonthlyRanking(){
+
+  const now = new Date();
+
+  const monthStart =
+    new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      1
+    )
+    .toISOString()
+    .slice(0,10);
+
+  const {data,error} =
+    await supabaseClient
+      .from("monthly_ranking")
+      .select("*")
+      .eq("month", monthStart)
+      .order(
+        "score",
+        {ascending:false}
+      );
+
+  if(error){
+
+    console.error(error);
+
+    document
+      .getElementById("monthlyRankingList")
+      .textContent =
+        "Não foi possível carregar o ranking.";
+
+    return;
+  }
+
+  document
+    .getElementById("currentMonth")
+    .textContent =
+      now.toLocaleDateString(
+        "pt-BR",
+        {
+          month:"long"
+        }
+      );
+
+  const list =
+    document.getElementById(
+      "monthlyRankingList"
+    );
+
+  list.innerHTML = "";
+
+  data.forEach(
+    (person,index)=>{
+
+      const div =
+        document.createElement("div");
+
+      div.className =
+        "rankItem";
+
+      let medal = "";
+
+      if(index === 0)
+        medal = "🥇";
+
+      else if(index === 1)
+        medal = "🥈";
+
+      else if(index === 2)
+        medal = "🥉";
+
+      div.innerHTML = `
+
+        <div class="rankPosition">
+          ${medal || (index+1)+"º"}
+        </div>
+
+        <div class="rankName">
+          ${person.name}
+        </div>
+
+        <div class="rankPoints">
+          ${person.score}
+        </div>
+
+      `;
+
+      list.appendChild(div);
+
+    }
+  );
+
+  }
 
 
 /* ======================================================
