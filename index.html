@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Desafio 2026</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: #f4f6f8;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 420px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 22px;
+      padding: 30px;
+      box-shadow: 0 10px 35px rgba(0,0,0,0.08);
+    }
+
+    .logo {
+      width: 70px;
+      height: 70px;
+      border-radius: 20px;
+      background: #111827;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      font-weight: bold;
+      margin: 0 auto 20px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #111827;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #6b7280;
+      margin-bottom: 28px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 7px;
+      color: #374151;
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px;
+      border: 1px solid #d1d5db;
+      border-radius: 12px;
+      margin-bottom: 16px;
+      font-size: 16px;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: #111827;
+    }
+
+    button {
+      width: 100%;
+      padding: 15px;
+      border: none;
+      border-radius: 12px;
+      background: #111827;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:active {
+      transform: scale(0.99);
+    }
+
+    #message {
+      margin-top: 15px;
+      text-align: center;
+      font-size: 14px;
+      color: #dc2626;
+    }
+
+    #app {
+      display: none;
+    }
+
+    .welcome {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    .welcome h2 {
+      color: #111827;
+      margin-bottom: 8px;
+    }
+
+    .welcome p {
+      color: #6b7280;
+    }
+
+    .menu {
+      display: grid;
+      gap: 12px;
+    }
+
+    .menu button {
+      background: #f3f4f6;
+      color: #111827;
+      text-align: left;
+    }
+
+    .logout {
+      margin-top: 20px;
+      background: #dc2626 !important;
+      color: white !important;
+      text-align: center !important;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+
+    <!-- LOGIN -->
+    <div class="card" id="login">
+
+      <div class="logo">D</div>
+
+      <h1>Desafio 2026</h1>
+
+      <p class="subtitle">
+        Entre para acessar seu desafio
+      </p>
+
+      <label for="email">E-mail</label>
+      <input
+        id="email"
+        type="email"
+        placeholder="Digite seu e-mail"
+      >
+
+      <label for="password">Senha</label>
+      <input
+        id="password"
+        type="password"
+        placeholder="Digite sua senha"
+      >
+
+      <button onclick="login()">
+        Entrar
+      </button>
+
+      <div id="message"></div>
+
+    </div>
+
+
+    <!-- APLICATIVO -->
+    <div class="card" id="app">
+
+      <div class="welcome">
+
+        <div class="logo">D</div>
+
+        <h2 id="welcomeName">
+          Olá!
+        </h2>
+
+        <p>
+          Bem-vindo ao Desafio 2026
+        </p>
+
+      </div>
+
+      <div class="menu">
+
+        <button onclick="alert('Calendário em construção')">
+          📅 Meu calendário
+        </button>
+
+        <button onclick="alert('Exercícios em construção')">
+          🏋️ Meus exercícios
+        </button>
+
+        <button onclick="alert('Faltas e compensações em construção')">
+          📋 Faltas e compensações
+        </button>
+
+        <button onclick="alert('Ranking em construção')">
+          🏆 Ranking
+        </button>
+
+        <button onclick="alert('Fechamento mensal em construção')">
+          📊 Fechamento mensal
+        </button>
+
+        <button class="logout" onclick="logout()">
+          Sair
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+<script>
+
+  // =====================================================
+  // CONFIGURAÇÃO DO SUPABASE
+  // =====================================================
+
+  const SUPABASE_URL =
+    "https://hrqsittjwiikzzwgzkud.supabase.co";
+
+  const SUPABASE_PUBLISHABLE_KEY =
+    "sb_publishable_pimByx9OjHFT_DbRF-CrtA_0fDjjzCB";
+
+
+  const supabaseClient =
+    supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_PUBLISHABLE_KEY
+    );
+
+
+  // =====================================================
+  // LOGIN
+  // =====================================================
+
+  async function login() {
+
+    const email =
+      document.getElementById("email").value.trim();
+
+    const password =
+      document.getElementById("password").value;
+
+    const message =
+      document.getElementById("message");
+
+    message.textContent = "";
+
+    if (!email || !password) {
+
+      message.textContent =
+        "Digite o e-mail e a senha.";
+
+      return;
+    }
+
+
+    const { data, error } =
+      await supabaseClient.auth.signInWithPassword({
+
+        email: email,
+
+        password: password
+
+      });
+
+
+    if (error) {
+
+      message.textContent =
+        "E-mail ou senha incorretos.";
+
+      console.error(error);
+
+      return;
+    }
+
+
+    await carregarParticipante(data.user.id);
+
+  }
+
+
+  // =====================================================
+  // CARREGAR PARTICIPANTE
+  // =====================================================
+
+  async function carregarParticipante(userId) {
+
+    const { data, error } =
+      await supabaseClient
+        .from("participants")
+        .select("name")
+        .eq("auth_user_id", userId)
+        .single();
+
+
+    if (error) {
+
+      console.error(error);
+
+      alert(
+        "Login realizado, mas não foi possível encontrar o participante."
+      );
+
+      return;
+    }
+
+
+    document.getElementById("login").style.display =
+      "none";
+
+    document.getElementById("app").style.display =
+      "block";
+
+    document.getElementById("welcomeName").textContent =
+      "Olá, " + data.name + "!";
+
+  }
+
+
+  // =====================================================
+  // VERIFICAR LOGIN EXISTENTE
+  // =====================================================
+
+  async function verificarSessao() {
+
+    const { data } =
+      await supabaseClient.auth.getSession();
+
+
+    if (data.session) {
+
+      await carregarParticipante(
+        data.session.user.id
+      );
+
+    }
+
+  }
+
+
+  // =====================================================
+  // SAIR
+  // =====================================================
+
+  async function logout() {
+
+    await supabaseClient.auth.signOut();
+
+    document.getElementById("app").style.display =
+      "none";
+
+    document.getElementById("login").style.display =
+      "block";
+
+    document.getElementById("email").value =
+      "";
+
+    document.getElementById("password").value =
+      "";
+
+  }
+
+
+  verificarSessao();
+
+</script>
+
+</body>
+</html>
