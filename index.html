@@ -1937,28 +1937,12 @@ await loadPayments();
     )
     .toLocaleDateString("en-CA");
 
-  const {data: payments, error} =
-    await supabaseClient
-      .from("monthly_payments")
-      .select(
-        "participant_id, amount, exempt, paid"
-      )
-      .eq("payment_month", monthStart);
-
-  if(error){
-
-    console.error(error);
-
-    container.innerHTML =
-      "Erro ao carregar pagamentos.";
-
-    return;
-  }
-
-  const {data: participants, error: peopleError} =
+  // Busca TODOS os participantes
+  const { data: participants, error: peopleError } =
     await supabaseClient
       .from("participants")
-      .select("id, name");
+      .select("id, name")
+      .order("name");
 
   if(peopleError){
 
@@ -1970,30 +1954,63 @@ await loadPayments();
     return;
   }
 
+  // Busca os pagamentos do mês
+  const { data: payments, error: paymentError } =
+    await supabaseClient
+      .from("monthly_payments")
+      .select(
+        "participant_id, amount, exempt, paid"
+      )
+      .eq("payment_month", monthStart);
+
+  if(paymentError){
+
+    console.error(paymentError);
+
+    container.innerHTML =
+      "Erro ao carregar pagamentos.";
+
+    return;
+  }
+
   container.innerHTML = "";
 
   let total = 0;
 
-  payments.forEach(payment => {
+  // Percorre TODOS os participantes
+  participants.forEach(person => {
 
-    const person =
-      participants.find(
-        p => p.id === payment.participant_id
+    const payment =
+      payments.find(
+        p => p.participant_id === person.id
       );
-
-    const name =
-      person ? person.name : "Participante";
 
     const div =
       document.createElement("div");
 
     div.className = "money";
 
-    if(payment.exempt){
+    // Se não tiver pagamento cadastrado
+    if(!payment){
 
       div.innerHTML = `
         <div class="moneyLabel">
-          🥇 ${name}
+          ${person.name}
+        </div>
+
+        <div class="moneyValue">
+          NÃO CADASTRADO
+        </div>
+      `;
+
+    }
+
+    // Se for isento
+    else if(payment.exempt){
+
+      div.innerHTML = `
+        <div class="moneyLabel">
+          🥇 ${person.name}
         </div>
 
         <div class="moneyValue">
@@ -2001,17 +2018,23 @@ await loadPayments();
         </div>
       `;
 
-    } else {
+    }
 
-      total += Number(payment.amount);
+    // Pagamento normal
+    else{
+
+      const amount =
+        Number(payment.amount) || 0;
+
+      total += amount;
 
       div.innerHTML = `
         <div class="moneyLabel">
-          ${name}
+          ${person.name}
         </div>
 
         <div class="moneyValue">
-          R$ ${Number(payment.amount)
+          R$ ${amount
             .toFixed(2)
             .replace(".", ",")}
         </div>
@@ -2023,6 +2046,7 @@ await loadPayments();
 
   });
 
+  // Prêmio acumulado
   const prize =
     document.createElement("div");
 
@@ -2034,7 +2058,9 @@ await loadPayments();
     </div>
 
     <div class="moneyValue">
-      R$ ${total.toFixed(2).replace(".", ",")}
+      R$ ${total
+        .toFixed(2)
+        .replace(".", ",")}
     </div>
   `;
 
