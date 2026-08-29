@@ -1975,7 +1975,10 @@ await loadPayments();
 
   container.innerHTML = "";
 
-  let total = 0;
+console.log("PARTICIPANTES:", participants);
+console.log("PAGAMENTOS:", payments);
+
+let total = 0;
 
   // Percorre TODOS os participantes
   participants.forEach(person => {
