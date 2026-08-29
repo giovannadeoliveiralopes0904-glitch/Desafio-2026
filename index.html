@@ -1981,7 +1981,10 @@ console.log("PAGAMENTOS:", payments);
 let total = 0;
 
   // Percorre TODOS os participantes
-  participants.forEach(person => {
+  console.log("TOTAL DE PARTICIPANTES:", participants.length);
+console.log("LISTA:", participants);
+    
+    participants.forEach(person => {
 
     const payment =
       payments.find(
