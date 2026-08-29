@@ -1974,6 +1974,17 @@ await loadPayments();
   }
 
   container.innerHTML = "";
+    container.innerHTML = `
+  <div class="money">
+    <div class="moneyLabel">
+      TESTE
+    </div>
+
+    <div class="moneyValue">
+      ${participants.length} PARTICIPANTES
+    </div>
+  </div>
+`;
 
   let total = 0;
 
