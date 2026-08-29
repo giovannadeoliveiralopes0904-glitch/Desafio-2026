@@ -1922,86 +1922,106 @@ await loadPayments();
   }
   async function loadPayments(){
 
+  const container =
+    document.getElementById("paymentsList");
+
+  if(!container) return;
+
+  container.innerHTML = "Carregando...";
+
   const monthStart =
     new Date(
       new Date().getFullYear(),
       new Date().getMonth(),
       1
     )
-    .toISOString()
-    .slice(0,10);
+    .toLocaleDateString("en-CA");
 
-  const {data,error} =
+  const {data: payments, error} =
     await supabaseClient
       .from("monthly_payments")
-      .select(`
-        participant_id,
-        amount,
-        exempt,
-        paid,
-        participants (
-          name
-        )
-      `)
-      .eq(
-        "payment_month",
-        monthStart
-      );
+      .select(
+        "participant_id, amount, exempt, paid"
+      )
+      .eq("payment_month", monthStart);
 
   if(error){
 
     console.error(error);
 
+    container.innerHTML =
+      "Erro ao carregar pagamentos.";
+
     return;
   }
 
-  const container =
-    document.getElementById(
-      "paymentsList"
-    );
+  const {data: participants, error: peopleError} =
+    await supabaseClient
+      .from("participants")
+      .select("id, name");
 
-  if(!container) return;
+  if(peopleError){
+
+    console.error(peopleError);
+
+    container.innerHTML =
+      "Erro ao carregar participantes.";
+
+    return;
+  }
 
   container.innerHTML = "";
 
   let total = 0;
 
-  data.forEach(payment => {
+  payments.forEach(payment => {
+
+    const person =
+      participants.find(
+        p => p.id === payment.participant_id
+      );
 
     const name =
-      payment.participants?.name ||
-      "Participante";
-
-    const value =
-      payment.exempt
-        ? "ISENTO"
-        : "R$ 50,00";
-
-    if(!payment.exempt){
-      total += 50;
-    }
+      person ? person.name : "Participante";
 
     const div =
       document.createElement("div");
 
     div.className = "money";
 
-    div.innerHTML = `
+    if(payment.exempt){
 
-      <div class="moneyLabel">
-        ${name}
-      </div>
+      div.innerHTML = `
+        <div class="moneyLabel">
+          🥇 ${name}
+        </div>
 
-      <div class="moneyValue">
-        ${value}
-      </div>
+        <div class="moneyValue">
+          ISENTO
+        </div>
+      `;
 
-    `;
+    } else {
+
+      total += Number(payment.amount);
+
+      div.innerHTML = `
+        <div class="moneyLabel">
+          ${name}
+        </div>
+
+        <div class="moneyValue">
+          R$ ${Number(payment.amount)
+            .toFixed(2)
+            .replace(".", ",")}
+        </div>
+      `;
+
+    }
 
     container.appendChild(div);
 
   });
-
 
   const prize =
     document.createElement("div");
@@ -2009,7 +2029,6 @@ await loadPayments();
   prize.className = "money";
 
   prize.innerHTML = `
-
     <div class="moneyLabel">
       💵 Prêmio acumulado
     </div>
@@ -2017,13 +2036,11 @@ await loadPayments();
     <div class="moneyValue">
       R$ ${total.toFixed(2).replace(".", ",")}
     </div>
-
   `;
 
   container.appendChild(prize);
 
   }
-
 
 /* ======================================================
    NAVEGAÇÃO
