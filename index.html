@@ -1937,7 +1937,7 @@ await loadPayments();
     )
     .toLocaleDateString("en-CA");
 
-  // Busca TODOS os participantes
+  // Busca todos os participantes
   const { data: participants, error: peopleError } =
     await supabaseClient
       .from("participants")
@@ -1975,16 +1975,10 @@ await loadPayments();
 
   container.innerHTML = "";
 
-console.log("PARTICIPANTES:", participants);
-console.log("PAGAMENTOS:", payments);
+  let total = 0;
 
-let total = 0;
-
-  // Percorre TODOS os participantes
-  console.log("TOTAL DE PARTICIPANTES:", participants.length);
-console.log("LISTA:", participants);
-    
-    participants.forEach(person => {
+  // Mostra todos os participantes
+  participants.forEach(person => {
 
     const payment =
       payments.find(
@@ -1996,7 +1990,7 @@ console.log("LISTA:", participants);
 
     div.className = "money";
 
-    // Se não tiver pagamento cadastrado
+    // Sem pagamento cadastrado
     if(!payment){
 
       div.innerHTML = `
@@ -2011,7 +2005,7 @@ console.log("LISTA:", participants);
 
     }
 
-    // Se for isento
+    // Participante isento
     else if(payment.exempt){
 
       div.innerHTML = `
