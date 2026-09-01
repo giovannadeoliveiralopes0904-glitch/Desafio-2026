@@ -1990,7 +1990,7 @@ await loadPayments();
 
     div.className = "money";
 
-    // Sem pagamento cadastrado
+    // Se não existir pagamento
     if(!payment){
 
       div.innerHTML = `
@@ -2026,7 +2026,20 @@ await loadPayments();
       const amount =
         Number(payment.amount) || 0;
 
-      total += amount;
+      // Só entra no prêmio se estiver pago
+      if(payment.paid){
+        total += amount;
+      }
+
+      const status =
+        payment.paid
+          ? "✅ PAGO"
+          : "⏳ PENDENTE";
+
+      const buttonText =
+        payment.paid
+          ? "Desmarcar pagamento"
+          : "Marcar como pago";
 
       div.innerHTML = `
         <div class="moneyLabel">
@@ -2037,6 +2050,18 @@ await loadPayments();
           R$ ${amount
             .toFixed(2)
             .replace(".", ",")}
+        </div>
+
+        <div style="margin-top:8px;">
+          <div style="font-size:14px; margin-bottom:6px;">
+            ${status}
+          </div>
+
+          <button
+            onclick="togglePayment('${payment.participant_id}', '${monthStart}', ${payment.paid})"
+          >
+            ${buttonText}
+          </button>
         </div>
       `;
 
@@ -2066,7 +2091,40 @@ await loadPayments();
 
   container.appendChild(prize);
 
+}
+
+
+// Marca ou desmarca o pagamento
+async function togglePayment(
+  participantId,
+  monthStart,
+  currentStatus
+){
+
+  const { error } =
+    await supabaseClient
+      .from("monthly_payments")
+      .update({
+        paid: !currentStatus
+      })
+      .eq("participant_id", participantId)
+      .eq("payment_month", monthStart);
+
+  if(error){
+
+    console.error(error);
+
+    alert(
+      "Não foi possível atualizar o pagamento."
+    );
+
+    return;
   }
+
+  // Recarrega a tela
+  loadPayments();
+
+}
 
 /* ======================================================
    NAVEGAÇÃO
